@@ -30,22 +30,20 @@ class FlashGet(object):
         else:
             pass
 
-    def pase_url(self, real_url):
+    def get_opener(self):
         import ssl
         ssl._create_default_https_context = ssl._create_unverified_context
         proxy_opener = request.ProxyHandler({'https': '127.0.0.1:8087'})
         opener = request.build_opener(proxy_opener)
         request.install_opener(opener)
-        headers = opener.open(real_url).headers
-        print(headers)
-        name = parse.unquote(real_url, encoding='utf-8').split('/')[-1]
+        return opener
+
+    def pase_url(self, real_url):
         path = parse.urlsplit(real_url)[2]
-        host = parse.urlsplit(real_url)
-
-        print(name)
-        print(path)
-        print(host)
-
+        name = path.split('/')[-1]
+        headers = self.get_opener().open(real_url).headers
+        length = headers['Content-Length']
+        return name, path, length
 
 if __name__ == '__main__':
     url = 'http://issuecdn.baidupcs.com/issue/netdisk/yunguanjia/BaiduNetdisk_6.0.2.exe'
@@ -53,5 +51,4 @@ if __name__ == '__main__':
     # url = 'https://www.google.com/chrome/browser/thankyou.html?standalone=1&platform=win&installdataindex=defaultbrowser'
     # url='https://dl.google.com/tag/s/appguid%3D%7B8A69D345-D564-463C-AFF1-A69D9E530F96%7D%26iid%3D%7BA11612D1-4FA0-F3F8-B6FB-30F3918552C5%7D%26lang%3Dzh-CN%26browser%3D4%26usagestats%3D1%26appname%3DGoogle%2520Chrome%26needsadmin%3Dprefers%26ap%3Dstable-arch_x86-statsdef_1%26installdataindex%3Ddefaultbrowser/chrome/install/ChromeStandaloneSetup.exe'
     fg = FlashGet(url)
-
-    fg.pase_url(url)
+    name, path, length = fg.pase_url(url)

@@ -14,21 +14,11 @@
 import threading
 
 
-headers="""
-GET %(path) HTTP/1.0
-Host: %(host)
-Accept: */*
-User-Agent: GeneralDownloadApplication
-Range: bytes=%(startPos)-%(endPos)
-Connection: close
-"""
-
 class HttpDownLoader(threading.Thread):
 
-    def __init__(self, host, path, start_pos, end_pos):
+    def __init__(self, opener, start_pos, end_pos):
         threading.Thread.__init__(self)
-        self.host = host
-        self.path = path
+        self.opener = opener
         self.start_pos = start_pos
         self.end_pos = end_pos
 
